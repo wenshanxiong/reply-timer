@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, UTC
 SUBREDDIT_NAME = "whereintheworld"
 
 # Time threshold
-CHECK_MINS = 60 * 10
+CHECK_MINS = 60 * 8
 
 def authenticate():
     """Authenticate with Reddit API."""
@@ -30,7 +30,7 @@ def check_posts_for_op_reply(reddit):
         has_op_reply = False
         for comment in post.comments:
             comment_created_time = datetime.fromtimestamp(comment.created_utc, UTC)
-            if comment.author != post.author:
+            if comment.author != post.author and comment.author != 'AutoModerator':
                 if (current_time - comment_created_time) > timedelta(minutes=CHECK_MINS):
                     has_comment = True
                 has_op_reply = has_op_reply or any(reply.author == post.author for reply in comment.replies.list())
