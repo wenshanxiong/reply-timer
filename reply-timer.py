@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, UTC
 SUBREDDIT_NAME = "whereintheworld"
 
 # Time threshold
-CHECK_MINS = 60 * 8
+CHECK_MINS = 60 * 10
 
 def authenticate():
     """Authenticate with Reddit API."""
