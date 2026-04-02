@@ -1,7 +1,20 @@
 import praw
 import time
 import cred
+import logging
+from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta, UTC
+
+LOG_FILE = "reply-timer.log"
+MAX_LOG_BYTES = 1 * 1024 * 1024  # 1 MB
+BACKUP_COUNT = 1
+
+logger = logging.getLogger("reply-timer")
+logger.setLevel(logging.INFO)
+
+file_handler = RotatingFileHandler(LOG_FILE, maxBytes=MAX_LOG_BYTES, backupCount=BACKUP_COUNT)
+file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(file_handler)
 
 # Subreddit to monitor
 # SUBREDDIT_NAME = "reply_timer_test"
@@ -36,14 +49,14 @@ def check_posts_for_op_reply(reddit):
                 has_op_reply = has_op_reply or any(reply.author == post.author for reply in comment.replies.list())
 
         if has_comment and not has_op_reply:
-            print(f"OP did not reply in time: {post.title}. url: {post.url}")
+            logger.info("OP did not reply in time: %s. url: %s", post.title, post.url)
             post.report(reason="")
 
 def main():
     reddit = authenticate()
-    print("Authentication successful. Scanning posts")
+    logger.info("Authentication successful. Scanning posts")
     check_posts_for_op_reply(reddit)
-    print("Scanning done")
+    logger.info("Scanning done")
 
 if __name__ == "__main__":
     main()
